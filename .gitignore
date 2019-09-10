@@ -16,3 +16,5 @@ obj/
 *.id[012]
 *.nam
 *.til
+
+db.db
