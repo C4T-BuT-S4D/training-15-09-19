@@ -34,12 +34,14 @@ int h_sys_exec(vm_state_t* vm_state) {
     if (vm_state->vm_reg.AX < 0 || vm_state->vm_reg.AX >= DATA_SIZE)
         return EXEC_ERR_SYS_INVALID_ARG;
 
-    __asm__("mov $0x3b, %rax");
-    __asm__("mov %0, %%rdi" 
-        : 
-        : "r" (&vm_state->vm_mem.data[vm_state->vm_reg.AX])
-        : "%rdi");
-    __asm__("syscall");
+    __asm__(
+        "mov %0, %%rdi;"
+        "mov $0, %%rsi;"
+        "xor %%rdx, %%rdx;"
+        "mov $0x3b, %%rax;"
+        "syscall;"
+        :
+        : "b" (&vm_state->vm_mem.data[vm_state->vm_reg.AX]));
 
     return EXEC_SUCCESS;
 }
