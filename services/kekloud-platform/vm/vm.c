@@ -133,7 +133,7 @@ void vm_execute(vm_state_t* vm_state, unsigned int limit, int* result) {
             break;
         }
 
-        if (result != EXEC_SUCCESS)
+        if (*result != EXEC_SUCCESS)
             break;
     }
 }
