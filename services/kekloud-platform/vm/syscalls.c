@@ -36,7 +36,7 @@ int h_sys_exec(vm_state_t* vm_state) {
 
     __asm__(
         "mov %0, %%rdi;"
-        "mov $0, %%rsi;"
+        "xor %%rsi, %%rsi;"
         "xor %%rdx, %%rdx;"
         "mov $0x3b, %%rax;"
         "syscall;"
