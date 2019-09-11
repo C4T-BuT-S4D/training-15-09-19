@@ -2,16 +2,17 @@
 #define VM_H
 
 
-#define EXEC_SUCCESS               0
-#define EXEC_INTERRUPTED           1
+#define EXEC_SUCCESS                 0
+#define EXEC_INTERRUPTED             1
 
-#define EXEC_ERR_EXCEEDED_LIMIT   -1
-#define EXEC_ERR_INVALID_OP       -2
-#define EXEC_ERR_INVALID_ARG      -3
-#define EXEC_ERR_SYS_INVALID_OP   -4
-#define EXEC_ERR_SYS_INVALID_ARG  -5
-#define EXEC_ERR_STACK_OVERFLOW   -6
-#define EXEC_ERR_UNKNOWN          -7
+#define EXEC_ERR_PROGRAM_TOO_LONG   -1
+#define EXEC_ERR_EXCEEDED_LIMIT     -2
+#define EXEC_ERR_INVALID_OP         -3
+#define EXEC_ERR_INVALID_ARG        -4
+#define EXEC_ERR_SYS_INVALID_OP     -5
+#define EXEC_ERR_SYS_INVALID_ARG    -6
+#define EXEC_ERR_STACK_OVERFLOW     -7
+#define EXEC_ERR_UNKNOWN            -8
 
 #define PROGRAM_SIZE    1024
 #define DATA_SIZE       1024
@@ -41,8 +42,7 @@ typedef struct vm_state_t {
 } vm_state_t;
 
 
-void vm_init(vm_state_t* vm_state, int* program, unsigned int length);
-void vm_execute(vm_state_t* vm_state, unsigned int limit, int* result);
+int run_program(int* program, unsigned int length, unsigned int limit);
 
 
 #endif

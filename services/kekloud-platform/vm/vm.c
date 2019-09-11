@@ -140,3 +140,21 @@ void vm_execute(vm_state_t* vm_state, unsigned int limit, int* result) {
             break;
     }
 }
+
+void vm_run(int* program, unsigned int length, unsigned int limit, int* result) {
+    vm_state_t vm_state;
+
+    vm_init(&vm_state, program, length);
+    vm_execute(&vm_state, limit, result);
+}
+
+int run_program(int* program, unsigned int length, unsigned int limit) {
+    int result;
+
+    if (length >= PROGRAM_SIZE)
+        return EXEC_ERR_PROGRAM_TOO_LONG;
+
+    vm_run(program, length, limit, &result);
+
+    return result;
+}
