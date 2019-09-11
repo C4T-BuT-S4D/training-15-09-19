@@ -1,13 +1,50 @@
 {{define "content"}}
+<div class="pattern-forms">
+    <form class="form" id="pattern-form-1">
+        <label for="fileType">file type</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="virus"
+            name="fileType"
+        />
+        <label for="offsets">offsets</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+            name="offsets"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Add signature
+        </button>
+    </form>
+    <form class="form" id="pattern-form-2">
+        <label for="offsets">offsets</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+            name="offsets"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Get signature
+        </button>
+    </form>
+</div>
+
 <table class="table table-bordered">
     <thead>
         <tr>
             <th scope="col">#</th>
             <th scope="col">id</th>
+            <th scope="col">sign</th>
+            <th scope="col">review</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
+
 <script>
     function findGetParameter(parameterName) {
         var result = null,
@@ -22,6 +59,59 @@
             });
         return result;
     }
+
+    const fileId = findGetParameter("fileId");
+
+    $("#pattern-form-1").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            put(json.result.pattern);
+            location.reload();
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/signature/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    $("#pattern-form-2").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            tSuccess(json.result.pattern);
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "GET",
+            url: "/api/signature/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
 
     let info = {};
 

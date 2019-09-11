@@ -419,9 +419,10 @@ func info(w http.ResponseWriter, r *http.Request) {
 			f, _ = os.Open(fmt.Sprintf("resources/signs/%s", p))
 			buf, _ := ioutil.ReadAll(f)
 			_ = f.Close()
+			b64 := base64.StdEncoding.EncodeToString(buf)
 			reviews = append(reviews, map[string]string{
 				"sign": p,
-				"res":  string(buf),
+				"res":  b64,
 			})
 		}
 
@@ -581,10 +582,12 @@ func signature(w http.ResponseWriter, r *http.Request) {
 
 		_ = f.Close()
 
+		b64 := base64.StdEncoding.EncodeToString(pattern)
+
 		j := map[string]interface{}{
 			"ok": true,
 			"result": map[string]string{
-				"pattern": string(pattern),
+				"pattern": b64,
 			},
 		}
 		ret, _ := json.Marshal(j)
@@ -657,17 +660,12 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		f, _ := os.Open(fmt.Sprintf("resources/signs/%s", pattern))
-
-		fileType, _ := ioutil.ReadAll(f)
-
-		_ = f.Close()
+		b64 := base64.StdEncoding.EncodeToString(pattern)
 
 		j := map[string]interface{}{
 			"ok": true,
-			"error": map[string]string{
-				"pattern":  string(pattern),
-				"fileType": string(fileType),
+			"result": map[string]string{
+				"pattern":  b64,
 			},
 		}
 		ret, _ := json.Marshal(j)
