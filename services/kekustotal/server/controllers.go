@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
@@ -15,6 +16,25 @@ import (
 	"strconv"
 	"strings"
 )
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "session",
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
+
+		j := map[string]interface{}{
+			"ok":     true,
+			"result": "OK",
+		}
+
+		ret, _ := json.Marshal(j)
+		_, _ = w.Write(ret)
+	}
+}
 
 func register(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +60,7 @@ func register(db *sql.DB) http.HandlerFunc {
 			if cnt > 0 {
 				w.WriteHeader(http.StatusForbidden)
 				j := map[string]interface{}{
-					"ok": false,
+					"ok":    false,
 					"error": "User already exists",
 				}
 				ret, _ := json.Marshal(j)
@@ -71,7 +91,7 @@ func register(db *sql.DB) http.HandlerFunc {
 			}
 
 			j := map[string]interface{}{
-				"ok": true,
+				"ok":     true,
 				"result": "OK",
 			}
 			ret, _ := json.Marshal(j)
@@ -101,7 +121,7 @@ func login(db *sql.DB) http.HandlerFunc {
 				w.WriteHeader(http.StatusForbidden)
 
 				j := map[string]interface{}{
-					"ok": false,
+					"ok":    false,
 					"error": "No such user",
 				}
 				ret, _ := json.Marshal(j)
@@ -116,8 +136,8 @@ func login(db *sql.DB) http.HandlerFunc {
 			})
 
 			j := map[string]interface{}{
-				"ok": true,
-				"error": "OK",
+				"ok":    true,
+				"result": "OK",
 			}
 			ret, _ := json.Marshal(j)
 
@@ -134,7 +154,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "No such field",
 			}
 			ret, _ := json.Marshal(j)
@@ -166,7 +186,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		_, _ = f.Write([]byte("access"))
 
 		j := map[string]interface{}{
-			"ok": true,
+			"ok":     true,
 			"result": idx,
 		}
 		ret, _ := json.Marshal(j)
@@ -188,7 +208,7 @@ func invite(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "No access",
 			}
 			ret, _ := json.Marshal(j)
@@ -204,7 +224,7 @@ func invite(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "No access",
 			}
 			ret, _ := json.Marshal(j)
@@ -233,7 +253,7 @@ func forbid(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "No access",
 			}
 			ret, _ := json.Marshal(j)
@@ -249,7 +269,7 @@ func forbid(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "No access",
 			}
 			ret, _ := json.Marshal(j)
@@ -267,11 +287,11 @@ func forbid(w http.ResponseWriter, r *http.Request) {
 
 func list(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		files, err := ioutil.ReadDir("resources/signs")
+		files, err := ioutil.ReadDir("resources/files")
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			logrus.Error("Error listing signs directory")
+			logrus.Error("Error listing files directory")
 			return
 		}
 
@@ -284,7 +304,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		}
 
 		j := map[string]interface{}{
-			"ok": true,
+			"ok":     true,
 			"result": res,
 		}
 		ret, _ := json.Marshal(j)
@@ -323,7 +343,7 @@ func download(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "No access",
 			}
 			ret, _ := json.Marshal(j)
@@ -331,7 +351,33 @@ func download(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.ServeFile(w, r, fmt.Sprintf("resources/files/%s", fileIdx))
+
+
+		f, err = os.Open(fmt.Sprintf("resources/files/%s", fileIdx))
+
+		if err != nil {
+			j := map[string]interface{}{
+				"ok":    false,
+				"error": "Invalid file",
+			}
+			ret, _ := json.Marshal(j)
+			_, _ = w.Write(ret)
+			return
+		}
+
+		content, _  := ioutil.ReadAll(f)
+
+		_ = f.Close()
+
+		res := base64.StdEncoding.EncodeToString(content)
+
+		j := map[string]interface{}{
+			"ok":    true,
+			"result": res,
+		}
+		ret, _ := json.Marshal(j)
+		_, _ = w.Write(ret)
+		return
 	}
 }
 
@@ -356,9 +402,7 @@ func info(w http.ResponseWriter, r *http.Request) {
 		files, err := ioutil.ReadDir(fmt.Sprintf("resources/stats/%s/patterns", fileIdx))
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			logrus.Error("Error listing stats directory")
-			return
+			files = make([]os.FileInfo, 0)
 		}
 
 		var res []string
@@ -369,7 +413,7 @@ func info(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		var reviews []map[string]string
+		reviews := make([]map[string]string, 0)
 
 		for _, p := range res {
 			f, _ = os.Open(fmt.Sprintf("resources/signs/%s", p))
@@ -382,9 +426,12 @@ func info(w http.ResponseWriter, r *http.Request) {
 		}
 
 		j := map[string]interface{}{
-			"virus": virus,
-			"notVirus": notVirus,
-			"reviews": reviews,
+			"ok": true,
+			"result": map[string]interface{}{
+				"virus":    virus,
+				"notVirus": notVirus,
+				"reviews":  reviews,
+			},
 		}
 
 		ret, _ := json.Marshal(j)
@@ -415,7 +462,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusForbidden)
 
 				j := map[string]interface{}{
-					"ok": false,
+					"ok":    false,
 					"error": "No access",
 				}
 				ret, _ := json.Marshal(j)
@@ -432,7 +479,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "Invalid file",
 			}
 			ret, _ := json.Marshal(j)
@@ -451,7 +498,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
 
 				j := map[string]interface{}{
-					"ok": false,
+					"ok":    false,
 					"error": "Invalid offset",
 				}
 				ret, _ := json.Marshal(j)
@@ -470,7 +517,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "Invalid offsets",
 			}
 			ret, _ := json.Marshal(j)
@@ -482,7 +529,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": fmt.Sprintf("Error calculating pattern: %s", err),
 			}
 			ret, _ := json.Marshal(j)
@@ -552,7 +599,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "Invalid file",
 			}
 			ret, _ := json.Marshal(j)
@@ -571,7 +618,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
 
 				j := map[string]interface{}{
-					"ok": false,
+					"ok":    false,
 					"error": "Invalid offset",
 				}
 				ret, _ := json.Marshal(j)
@@ -590,7 +637,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": "Invalid offsets",
 			}
 			ret, _ := json.Marshal(j)
@@ -602,7 +649,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			j := map[string]interface{}{
-				"ok": false,
+				"ok":    false,
 				"error": fmt.Sprintf("Error calculating pattern: %s", err),
 			}
 			ret, _ := json.Marshal(j)
@@ -619,12 +666,52 @@ func signature(w http.ResponseWriter, r *http.Request) {
 		j := map[string]interface{}{
 			"ok": true,
 			"error": map[string]string{
-				"pattern": string(pattern),
+				"pattern":  string(pattern),
 				"fileType": string(fileType),
 			},
 		}
 		ret, _ := json.Marshal(j)
 
 		_, _ = w.Write(ret)
+	}
+}
+
+func pIndex(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := GetUser(r, db)
+
+		renderWithContext(w, "index.html", u)
+	}
+}
+
+func pLogin(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := GetUser(r, db)
+
+		renderWithContext(w, "login.html", u)
+	}
+}
+
+func pRegister(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := GetUser(r, db)
+
+		renderWithContext(w, "register.html", u)
+	}
+}
+
+func pUpload(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := GetUser(r, db)
+
+		renderWithContext(w, "upload.html", u)
+	}
+}
+
+func pInfo(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := GetUser(r, db)
+
+		renderWithContext(w, "info.html", u)
 	}
 }

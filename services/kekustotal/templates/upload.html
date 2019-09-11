@@ -1,0 +1,35 @@
+{{define "content"}}
+<form class="form" id="upload-form">
+    <h2 class="formTitle">File upload form</h2>
+    <label for="file">File</label>
+    <input type="file" class="form-control-file" name="file" id="fileupload" />
+</form>
+<script>
+    const onSuccess = function(json) {
+        put(json.result);
+        location.href = "/";
+    };
+
+    const onError = function(json) {
+        tError(json.error);
+    };
+
+    $(document).ready(function() {
+        $("#fileupload").fileupload({
+            url: "/api/upload/",
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true
+            },
+            done: function(e, data) {
+                const json = data.jqXHR.responseJSON;
+                onSuccess(json);
+            },
+            fail: function(e, data) {
+                const json = data.jqXHR.responseJSON;
+                onError(json);
+            }
+        });
+    });
+</script>
+{{ end }}

@@ -1,0 +1,124 @@
+body {
+    font-family: "Inconsolata", monospace;
+}
+
+.navbar-2 {
+    width: 100%;
+    height: 70px;
+
+    display: grid;
+    grid-template-columns: 50px 1fr 150px 150px 0px;
+    align-items: center;
+
+    column-gap: 10px;
+
+    background-color: #c8d6e599;
+}
+
+.navbar-3 {
+    width: 100%;
+    height: 70px;
+
+    display: grid;
+    grid-template-columns: 50px 1fr 150px 150px 150px 0px;
+    align-items: center;
+
+    column-gap: 10px;
+
+    background-color: #c8d6e599;
+}
+
+.logo {
+    margin-left: 20px;
+
+    grid-column: 1;
+    width: 50px;
+    height: 50px;
+
+    animation-name: logoanime;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes logoanime {
+    to {
+        transform: rotate3d(1, 0, 0, 720deg) rotate(720deg);
+    }
+}
+
+.navbar-2 .login-button {
+    grid-column: 3;
+}
+
+.navbar-2 .register-button {
+    grid-column: 4;
+}
+
+.navbar-3 .upload-button {
+    grid-column: 3;
+}
+
+.navbar-3 .login-button {
+    grid-column: 4;
+}
+
+.navbar-3 .register-button {
+    grid-column: 5;
+}
+
+.btn {
+    width: 100%;
+}
+
+.button-blue {
+    background-color: #1dd1a1;
+    font-size: 1.2rem;
+}
+
+.button-orange {
+    background-color: #feca57;
+    font-size: 1.2rem;
+}
+
+.button-red {
+    background-color: #ff6b6b;
+    font-size: 1.2rem;
+}
+
+.button-water {
+    background-color: #48dbfb;
+    font-size: 1.2rem;
+}
+
+.formTitle {
+    margin-bottom: 30px;
+}
+
+.form {
+    margin-top: 10%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+
+    padding: 50px;
+    padding-top: 30px;
+    border: 1px solid #5f27cd;
+    border-radius: 15px;
+}
+
+.submit-button {
+    margin-top: 30px;
+}
+
+.form label:first-of-type {
+    margin-top: 0;
+}
+
+.form label {
+    margin-top: 30px;
+}
+
+.table {
+    margin-top: 5%;
+}

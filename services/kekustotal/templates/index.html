@@ -1,0 +1,41 @@
+{{define "content"}}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">id</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<script>
+    let files = [];
+
+    const onSuccess = function(json) {
+        files = json.result;
+
+        for (let i = 0; i < files.length; i += 1) {
+            $("table tbody").append(`
+                <tr>
+                    <th scope="row">${i + 1}</th>
+                    <td>
+                        <a href="/info/?fileId=${files[i]}">${files[i]}</a>
+                    </td>
+                </tr>
+            `);
+        }
+    };
+
+    const onError = function(resp) {
+        const json = resp.responseJSON;
+        tError(json.error);
+    };
+
+    $.ajax({
+        type: "GET",
+        url: "/api/list/",
+        success: onSuccess,
+        error: onError
+    });
+</script>
+{{ end }}

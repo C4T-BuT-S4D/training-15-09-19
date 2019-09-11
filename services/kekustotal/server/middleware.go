@@ -8,29 +8,9 @@ import (
 
 func loginRequired(handlerFunc http.HandlerFunc, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s, err := r.Cookie("session")
+		u := GetUser(r, db)
 
-		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
-			j := map[string]interface{}{
-				"ok": false,
-				"error": "Authentication required",
-			}
-			ret, _ := json.Marshal(j)
-			_, _ = w.Write(ret)
-			return
-		}
-
-		row := db.QueryRow(`
-			SELECT COUNT(*)
-			FROM users
-			WHERE id=?
-		`, s.Value)
-
-		var cnt int
-		_ = row.Scan(&cnt)
-
-		if cnt == 0 {
+		if u == nil {
 			w.WriteHeader(http.StatusForbidden)
 			j := map[string]interface{}{
 				"ok": false,
@@ -42,5 +22,12 @@ func loginRequired(handlerFunc http.HandlerFunc, db *sql.DB) http.HandlerFunc {
 		}
 
 		handlerFunc.ServeHTTP(w, r)
+	}
+}
+
+func withJsonResponse(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
 	}
 }

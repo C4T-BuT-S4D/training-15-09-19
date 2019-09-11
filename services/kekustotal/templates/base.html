@@ -1,0 +1,173 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Kekus Total</title>
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous"
+        />
+        <link
+            href="https://fonts.googleapis.com/css?family=Inconsolata&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css"
+        />
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.2.0/js/jquery.fileupload.js"></script>
+        <link rel="stylesheet" href="/public/css/main.css" />
+    </head>
+
+    <body>
+        {{if .}}
+        <div class="navbar-3">
+        {{else}}
+        <div class="navbar-2">
+        {{end}}
+            <a href="/"><img class="logo" src="/public/images/logo.png"/></a>
+            {{if .}}
+            <a class="upload-button" href="/upload">
+                <button type="button" class="btn button-water">
+                    Upload
+                </button>
+            </a>
+            <div class="login-button">
+                <button type="button" class="btn button-blue">
+                    {{.Login}}
+                </button>
+            </div>
+            <div class="register-button">
+                <button type="button" class="btn button-red" id="logout">
+                    Logout
+                </button>
+            </div>
+            {{else}}
+            <a class="login-button" href="/login">
+                <button type="button" class="btn button-blue">Login</button>
+            </a>
+            <a class="register-button" href="/register">
+                <button type="button" class="btn button-orange">
+                    Register
+                </button>
+            </a>
+            {{end}}
+        </div>
+        <div class="container">{{block "content" .}}{{ end }}</div>
+    </body>
+
+    <script>
+        const vecLength = function(x, y) {
+            return Math.sqrt(x * x + y * y);
+        };
+
+        const speed = 5;
+        let mouseX = null;
+        let mouseY = null;
+        let go = false;
+        // $(document).mousemove(function(event) {
+        //     mouseX = event.pageX;
+        //     mouseY = event.pageY;
+        // });
+        // $(".navbar").mousemove(function(event) {
+        //     if (!go) {
+        //         go = true;
+        //         setInterval(function() {
+        //             const logo = $(".logo").first();
+        //             let off = logo.offset();
+        //             let logoX = off.left;
+        //             let logoY = off.top;
+
+        //             let vecX = mouseX - logoX - logo.width() / 2;
+        //             let vecY = mouseY - logoY - logo.height() / 2;
+
+        //             const len = vecLength(vecX, vecY);
+
+        //             if (len > speed) {
+        //                 vecX = (vecX * speed) / len;
+        //                 vecY = (vecY * speed) / len;
+        //             }
+
+        //             logo.offset({
+        //                 left: logoX + vecX,
+        //                 top: logoY + vecY
+        //             });
+        //         }, 10);
+        //     }
+        // });
+    </script>
+
+    <script>
+        const tError = function(text) {
+            $.toast({
+                heading: "Error",
+                text: text,
+                icon: "error",
+                showHideTransition: "fade",
+                position: "bottom-right"
+            });
+        };
+
+        const tSuccess = function(text) {
+            $.toast({
+                heading: "Success",
+                text: text,
+                icon: "success",
+                showHideTransition: "fade",
+                position: "bottom-right"
+            });
+        };
+
+        const put = function(text) {
+            localStorage["flash"] = text;
+        };
+
+        const get = function(text) {
+            const ret = localStorage["flash"];
+            delete localStorage["flash"];
+            return ret;
+        };
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            const message = get();
+            if (message != undefined) {
+                tSuccess(message);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            const onSuccess = function(json) {
+                put(json.result);
+                location.href = "/";
+            };
+
+            const onError = function(resp) {
+                console.log(resp);
+                const json = resp.responseJSON;
+                tError(json.error);
+            };
+
+            $("#logout").click(function() {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/logout/",
+                    success: onSuccess,
+                    error: onError
+                });
+            });
+        });
+    </script>
+</html>
+{{ end }}

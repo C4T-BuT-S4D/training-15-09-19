@@ -1,0 +1,45 @@
+{{define "content"}}
+<form class="form" id="register-form">
+    <h2 class="formTitle">Register form</h2>
+    <label for="username">Username</label>
+    <input
+        type="text"
+        class="form-control"
+        placeholder="username"
+        name="username"
+    />
+    <label for="login">Password</label>
+    <input
+        type="password"
+        class="form-control"
+        placeholder="password"
+        name="password"
+    />
+    <button type="submit" class="btn button-blue submit-button">Submit</button>
+</form>
+<script>
+    $("#register-form").submit(function(event) {
+        event.preventDefault();
+
+        const formData = $(this).serialize();
+
+        const onSuccess = function(json) {
+            put(json.result);
+            location.href = "/login/";
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/register/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+</script>
+{{ end }}
