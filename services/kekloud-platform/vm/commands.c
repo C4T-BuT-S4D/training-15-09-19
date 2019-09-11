@@ -6,14 +6,8 @@
 #include "syscalls.h"
 
 
-int* _h_get_ptr(vm_state_t* vm_state, int address) {
-    if (address >= DATA_SIZE)
-        return NULL;
-
-    if (address >= 0)
-        return &vm_state->vm_mem.data[address];
-
-    switch (address) {
+int* _h_get_reg_ptr(vm_state_t* vm_state, int reg) {
+    switch (reg) {
         case REG_AX:
             return &vm_state->vm_reg.AX;
         case REG_BX:
@@ -29,6 +23,16 @@ int* _h_get_ptr(vm_state_t* vm_state, int address) {
         default:
             return NULL;
     }
+}
+
+int* _h_get_ptr(vm_state_t* vm_state, int address) {
+    if (address >= DATA_SIZE)
+        return NULL;
+
+    if (address >= 0)
+        return &vm_state->vm_mem.data[address];
+
+    return _h_get_reg_ptr(vm_state, address);
 }
 
 int h_op_mov(vm_state_t* vm_state) {
@@ -196,7 +200,7 @@ int h_op_jge(vm_state_t* vm_state) {
     if (*dst < 0 || *dst >= PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
-    if ((vm_state->vm_reg.FLAGS & FLAG_ZF) == 0 || (vm_state->vm_reg.FLAGS & FLAG_SF) == 0)
+    if ((vm_state->vm_reg.FLAGS & FLAG_ZF) != 0 || (vm_state->vm_reg.FLAGS & FLAG_SF) == 0)
         vm_state->vm_reg.IP = *dst;
     else
         vm_state->vm_reg.IP++;
@@ -234,7 +238,7 @@ int h_op_jle(vm_state_t* vm_state) {
     if (*dst < 0 || *dst >= PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
-    if ((vm_state->vm_reg.FLAGS & FLAG_ZF) == 0 || (vm_state->vm_reg.FLAGS & FLAG_SF) != 0)
+    if ((vm_state->vm_reg.FLAGS & FLAG_ZF) != 0 || (vm_state->vm_reg.FLAGS & FLAG_SF) != 0)
         vm_state->vm_reg.IP = *dst;
     else
         vm_state->vm_reg.IP++;
@@ -410,6 +414,22 @@ int h_op_div(vm_state_t* vm_state) {
     return EXEC_SUCCESS;
 }
 
+int h_op_mod(vm_state_t* vm_state) {
+    int* val1;
+    int* val2;
+
+    val1 = _h_get_ptr(vm_state, vm_state->vm_mem.program[++vm_state->vm_reg.IP]);
+    val2 = _h_get_ptr(vm_state, vm_state->vm_mem.program[++vm_state->vm_reg.IP]);
+
+    if (val1 == NULL || val2 == NULL)
+        return EXEC_ERR_INVALID_ARG;
+
+    *val1 = *val1 % *val2;
+    vm_state->vm_reg.IP++;
+
+    return EXEC_SUCCESS;
+}
+
 int h_op_loop(vm_state_t* vm_state) {
     int* dst;
 
@@ -453,10 +473,10 @@ int h_op_call(vm_state_t* vm_state) {
 }
 
 int h_op_ret(vm_state_t* vm_state) {
-    if (vm_state->vm_reg.SP < 0)
+    if (vm_state->vm_reg.SP <= 0)
         return EXEC_ERR_STACK_OVERFLOW;
 
-    vm_state->vm_reg.IP = vm_state->vm_mem.stack[vm_state->vm_reg.SP--];
+    vm_state->vm_reg.IP = vm_state->vm_mem.stack[--vm_state->vm_reg.SP];
     
     return EXEC_SUCCESS;
 }
@@ -486,10 +506,10 @@ int h_op_pop(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (vm_state->vm_reg.SP < 0)
+    if (vm_state->vm_reg.SP <= 0)
         return EXEC_ERR_STACK_OVERFLOW;
 
-    *dst = vm_state->vm_mem.stack[vm_state->vm_reg.SP--];
+    *dst = vm_state->vm_mem.stack[--vm_state->vm_reg.SP];
     vm_state->vm_reg.IP++;
 
     return EXEC_SUCCESS;

@@ -95,6 +95,9 @@ void vm_execute(vm_state_t* vm_state, unsigned int limit, int* result) {
             case OP_DIV:
                 *result = h_op_div(vm_state);
                 break;
+            case OP_MOD:
+                *result = h_op_div(vm_state);
+                break;
             case OP_LOOP:
                 *result = h_op_loop(vm_state);
                 break;

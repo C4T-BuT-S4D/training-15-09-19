@@ -33,6 +33,7 @@
 #define OP_SUB    52
 #define OP_MUL    53
 #define OP_DIV    54
+#define OP_MOD    55
 
 #define OP_LOOP   61
 
@@ -83,6 +84,7 @@ int h_op_add(vm_state_t* vm_state);
 int h_op_sub(vm_state_t* vm_state);
 int h_op_mul(vm_state_t* vm_state);
 int h_op_div(vm_state_t* vm_state);
+int h_op_mod(vm_state_t* vm_state);
 
 int h_op_loop(vm_state_t* vm_state);
 
