@@ -16,3 +16,6 @@ obj/
 *.id[012]
 *.nam
 *.til
+
+.gdb_history
+core
