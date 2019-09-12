@@ -14,9 +14,9 @@
 #define EXEC_ERR_STACK_OVERFLOW     -7
 #define EXEC_ERR_UNKNOWN            -8
 
-#define PROGRAM_SIZE    1024
-#define DATA_SIZE       1024
-#define STACK_SIZE      1024
+#define VM_PROGRAM_SIZE    1024
+#define VM_DATA_SIZE       1024
+#define VM_STACK_SIZE      1024
 
 
 typedef struct vm_reg_t {
@@ -31,9 +31,9 @@ typedef struct vm_reg_t {
 } vm_reg_t;
 
 typedef struct vm_mem_t {
-    int program[PROGRAM_SIZE];
-    int data[DATA_SIZE];
-    int stack[STACK_SIZE];
+    int program[VM_PROGRAM_SIZE];
+    int data[VM_DATA_SIZE];
+    int stack[VM_STACK_SIZE];
 } vm_mem_t;
 
 typedef struct vm_state_t {

@@ -15,9 +15,9 @@ void vm_init(vm_state_t* vm_state, int* program, unsigned int length) {
     vm_state->vm_reg.CX = 0;
     vm_state->vm_reg.DX = 0;
 
-    memset(vm_state->vm_mem.program, 0, PROGRAM_SIZE * sizeof(int));
-    memset(vm_state->vm_mem.data, 0, DATA_SIZE * sizeof(int));
-    memset(vm_state->vm_mem.stack, 0, STACK_SIZE * sizeof(int));
+    memset(vm_state->vm_mem.program, 0, VM_PROGRAM_SIZE * sizeof(int));
+    memset(vm_state->vm_mem.data, 0, VM_DATA_SIZE * sizeof(int));
+    memset(vm_state->vm_mem.stack, 0, VM_STACK_SIZE * sizeof(int));
     
     memcpy(vm_state->vm_mem.program, program, length * sizeof(int));
 }
@@ -151,7 +151,7 @@ void vm_run(int* program, unsigned int length, unsigned int limit, int* result) 
 int run_program(int* program, unsigned int length, unsigned int limit) {
     int result;
 
-    if (length >= PROGRAM_SIZE)
+    if (length >= VM_PROGRAM_SIZE)
         return EXEC_ERR_PROGRAM_TOO_LONG;
 
     vm_run(program, length, limit, &result);

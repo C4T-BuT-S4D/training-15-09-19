@@ -26,7 +26,7 @@ int* _h_get_reg_ptr(vm_state_t* vm_state, int reg) {
 }
 
 int* _h_get_ptr(vm_state_t* vm_state, int address) {
-    if (address >= DATA_SIZE)
+    if (address >= VM_DATA_SIZE)
         return NULL;
 
     if (address >= 0)
@@ -124,7 +124,7 @@ int h_op_jmp(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     vm_state->vm_reg.IP = *dst;
@@ -140,7 +140,7 @@ int h_op_je(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if ((vm_state->vm_reg.FLAGS & FLAG_ZF) != 0)
@@ -159,7 +159,7 @@ int h_op_jne(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if ((vm_state->vm_reg.FLAGS & FLAG_ZF) == 0)
@@ -178,7 +178,7 @@ int h_op_jg(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if ((vm_state->vm_reg.FLAGS & FLAG_ZF) == 0 && (vm_state->vm_reg.FLAGS & FLAG_SF) == 0)
@@ -197,7 +197,7 @@ int h_op_jge(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if ((vm_state->vm_reg.FLAGS & FLAG_ZF) != 0 || (vm_state->vm_reg.FLAGS & FLAG_SF) == 0)
@@ -216,7 +216,7 @@ int h_op_jl(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if ((vm_state->vm_reg.FLAGS & FLAG_ZF) == 0 && (vm_state->vm_reg.FLAGS & FLAG_SF) != 0)
@@ -235,7 +235,7 @@ int h_op_jle(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if ((vm_state->vm_reg.FLAGS & FLAG_ZF) != 0 || (vm_state->vm_reg.FLAGS & FLAG_SF) != 0)
@@ -438,7 +438,7 @@ int h_op_loop(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
     if (vm_state->vm_reg.CX > 0) {
@@ -460,10 +460,10 @@ int h_op_call(vm_state_t* vm_state) {
     if (dst == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (*dst < 0 || *dst >= PROGRAM_SIZE)
+    if (*dst < 0 || *dst >= VM_PROGRAM_SIZE)
         return EXEC_ERR_INVALID_ARG;
 
-    if (vm_state->vm_reg.SP >= STACK_SIZE)
+    if (vm_state->vm_reg.SP >= VM_STACK_SIZE)
         return EXEC_ERR_STACK_OVERFLOW;
 
     vm_state->vm_mem.stack[vm_state->vm_reg.SP++] = vm_state->vm_reg.IP + 1;
@@ -489,7 +489,7 @@ int h_op_push(vm_state_t* vm_state) {
     if (src == NULL)
         return EXEC_ERR_INVALID_ARG;
 
-    if (vm_state->vm_reg.SP >= STACK_SIZE)
+    if (vm_state->vm_reg.SP >= VM_STACK_SIZE)
         return EXEC_ERR_STACK_OVERFLOW;
 
     vm_state->vm_mem.stack[vm_state->vm_reg.SP++] = *src;
