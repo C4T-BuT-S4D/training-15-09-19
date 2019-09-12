@@ -20,10 +20,10 @@
 
 
 typedef struct vm_reg_t {
-    unsigned int IP;
-    unsigned int SP;
-    unsigned int BP;
-    unsigned char FLAGS;
+    int IP;
+    int SP;
+    int BP;
+    char FLAGS;
     int AX;
     int BX;
     int CX;
