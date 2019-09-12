@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-Wall
-SECFLAGS=-pie -fPIE -Wl,-z,relro,-z,now -Wl,-z,noexecstack -fstack-protector-all
+CFLAGS=-Wall -pie -s -fvisibility=hidden
+SECFLAGS=-fPIC -Wl,-z,relro,-z,now -Wl,-z,noexecstack -fstack-protector-strong
 
 SOURCES=kpl.c account.c program.c
 
@@ -9,7 +9,7 @@ SOURCES=kpl.c account.c program.c
 
 
 all:
-	$(CC) $(CFLAGS) $(SECFLAGS) -o kpl $(SOURCES) -L. -l:./vm.so
+	$(CC) $(CFLAGS) $(SECFLAGS) $(SOURCES) -o kpl -L . -l :./vm.so
 
 clean:
 	rm -f vm.so

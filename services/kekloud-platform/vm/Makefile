@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-Wall
-SECFLAGS=-pie -fPIE -Wl,-z,relro,-z,now -Wl,-z,noexecstack -fstack-protector-all
+CFLAGS=-Wall -shared -s -fvisibility=hidden
+SECFLAGS=-fPIC -Wl,-z,relro,-z,now -Wl,-z,noexecstack -fstack-protector-strong
 
 SOURCES=vm.c commands.c syscalls.c
 
@@ -9,8 +9,7 @@ SOURCES=vm.c commands.c syscalls.c
 
 
 all:
-	$(CC) $(CFLAGS) $(SECFLAGS) -shared -fPIC -o vm.so $(SOURCES)
-		
+	$(CC) $(CFLAGS) $(SECFLAGS) $(SOURCES) -o vm.so
 
 clean:
 	rm -f vm.so
