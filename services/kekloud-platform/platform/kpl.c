@@ -74,7 +74,7 @@ int save_vm(vm_account_t* vm_account, vm_program_t* vm_program) {
 int run_vm(vm_program_t* vm_program) {
     int result;
 
-    result = run_program(vm_program->program, vm_program->length, VM_EXEC_LIMIT);
+    result = run_program(vm_program, VM_EXEC_LIMIT);
 
     printf("[*] You VM exited with code %d\n", result);
 

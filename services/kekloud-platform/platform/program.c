@@ -2,6 +2,7 @@
 #include <string.h>
 #include <dirent.h>
 
+#include "vm.h"
 #include "account.h"
 #include "program.h"
 

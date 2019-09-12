@@ -41,8 +41,13 @@ typedef struct vm_state_t {
     vm_mem_t vm_mem;
 } vm_state_t;
 
+typedef struct vm_program_t {
+    int length;
+    int program[VM_PROGRAM_SIZE];
+} vm_program_t;
 
-int run_program(int* program, unsigned int length, unsigned int limit);
+
+int run_program(vm_program_t* vm_program, unsigned int limit);
 
 
 #endif

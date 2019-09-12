@@ -4,7 +4,7 @@
 #include "commands.h"
 
 
-void vm_init(vm_state_t* vm_state, int* program, unsigned int length) {
+void vm_init(vm_state_t* vm_state, vm_program_t* vm_program) {
     vm_state->vm_reg.IP = 0;
     vm_state->vm_reg.SP = 0;
     vm_state->vm_reg.BP = 0;
@@ -19,7 +19,7 @@ void vm_init(vm_state_t* vm_state, int* program, unsigned int length) {
     memset(vm_state->vm_mem.data, 0, VM_DATA_SIZE * sizeof(int));
     memset(vm_state->vm_mem.stack, 0, VM_STACK_SIZE * sizeof(int));
     
-    memcpy(vm_state->vm_mem.program, program, length * sizeof(int));
+    memcpy(vm_state->vm_mem.program, vm_program->program, vm_program->length * sizeof(int));
 }
 
 void vm_execute(vm_state_t* vm_state, unsigned int limit, int* result) {
@@ -141,20 +141,20 @@ void vm_execute(vm_state_t* vm_state, unsigned int limit, int* result) {
     }
 }
 
-void vm_run(int* program, unsigned int length, unsigned int limit, int* result) {
+void vm_run(vm_program_t* vm_program, unsigned int limit, int* result) {
     vm_state_t vm_state;
 
-    vm_init(&vm_state, program, length);
+    vm_init(&vm_state, vm_program);
     vm_execute(&vm_state, limit, result);
 }
 
-int run_program(int* program, unsigned int length, unsigned int limit) {
+int run_program(vm_program_t* vm_program, unsigned int limit) {
     int result;
 
-    if (length >= VM_PROGRAM_SIZE)
+    if (vm_program->length >= VM_PROGRAM_SIZE)
         return EXEC_ERR_PROGRAM_TOO_LONG;
 
-    vm_run(program, length, limit, &result);
+    vm_run(vm_program, limit, &result);
 
     return result;
 }
