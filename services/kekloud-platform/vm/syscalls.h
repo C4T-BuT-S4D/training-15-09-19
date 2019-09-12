@@ -1,7 +1,7 @@
-#include "vm.h"
-
 #ifndef VM_SYSCALLS_H
 #define VM_SYSCALLS_H
+
+#include "vm.h"
 
 
 #define SYS_EXIT    1

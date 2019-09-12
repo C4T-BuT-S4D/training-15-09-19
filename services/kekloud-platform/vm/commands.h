@@ -1,7 +1,7 @@
-#include "vm.h"
-
 #ifndef VM_COMMANDS_H
 #define VM_COMMANDS_H
+
+#include "vm.h"
 
 
 #define OP_NONE   0
