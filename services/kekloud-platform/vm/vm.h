@@ -47,7 +47,7 @@ typedef struct vm_program_t {
 } vm_program_t;
 
 
-int run_program(vm_program_t* vm_program, unsigned int limit);
+int __attribute__ ((visibility ("default"))) run_program(vm_program_t* vm_program, unsigned int limit);
 
 
 #endif
