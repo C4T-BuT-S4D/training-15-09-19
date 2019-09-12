@@ -151,7 +151,7 @@ void vm_run(vm_program_t* vm_program, unsigned int limit, int* result) {
 int run_program(vm_program_t* vm_program, unsigned int limit) {
     int result;
 
-    if (vm_program->length >= VM_PROGRAM_SIZE)
+    if (vm_program->length > VM_PROGRAM_SIZE)
         return EXEC_ERR_PROGRAM_TOO_LONG;
 
     vm_run(vm_program, limit, &result);
