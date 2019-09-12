@@ -12,4 +12,4 @@ all:
 	$(CC) $(CFLAGS) $(SECFLAGS) $(SOURCES) -o kpl -L . -l :./vm.so
 
 clean:
-	rm -f vm.so
+	rm -f kpl
