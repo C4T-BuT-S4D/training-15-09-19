@@ -120,6 +120,10 @@ body {
     grid-template-columns: 1fr 1fr;
 }
 
+#download {
+    margin-top: 20px;
+}
+
 .perms-forms {
     display: grid;
     grid-template-columns: 1fr 1fr;

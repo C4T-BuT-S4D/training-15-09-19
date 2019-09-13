@@ -1,4 +1,7 @@
 {{define "content"}}
+<button type="button" class="btn button-water" id="download">
+    Download
+</button>
 <div class="pattern-forms">
     <form class="form" id="pattern-form-1">
         <label for="fileType">file type</label>
@@ -87,6 +90,47 @@
             });
         return result;
     }
+
+    function download(filename, text) {
+        var element = document.createElement("a");
+        element.setAttribute(
+            "href",
+            "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+        );
+        element.setAttribute("download", filename);
+
+        element.style.display = "none";
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    $("#download").click(function() {
+        const onSuccess = function(json) {
+            try {
+                download("file", atob(json.result));
+            } catch {
+                tError("Invalid file");
+            }
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "GET",
+            url: "/api/download/",
+            data: {
+                fileId: findGetParameter("fileId")
+            },
+            success: onSuccess,
+            error: onError
+        });
+    });
 
     const fileId = findGetParameter("fileId");
 
