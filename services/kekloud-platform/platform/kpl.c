@@ -64,7 +64,6 @@ int save_vm(vm_account_t* vm_account, vm_program_t* vm_program) {
     if ((result = save_program(vm_program, vm_account)))
         return result;
 
-    puts("[+] Your VM was saved.");
     printf("[*] Name: %s\n", vm_account->name);
     printf("[*] Password: %s\n", vm_account->password);
 
