@@ -71,7 +71,7 @@ def check(host):
     assert_eq(cost, item.get('cost'), 'Invalid item data')
 
     all_items = mch.get_all_items(requests)
-    assert_in_list_dicts(my_items, 'id', item_id, 'Could not find added item')
+    assert_in_list_dicts(all_items, 'id', item_id, 'Could not find added item')
 
     fake_username, fake_password = mch.register_user()
     fake_sess = mch.login_user(fake_username, fake_password)
