@@ -16,7 +16,7 @@ int check_vm_name(vm_account_t* vm_account) {
         if (!(vm_account->name[i] >= 'a' && vm_account->name[i] <= 'z') &&
             !(vm_account->name[i] >= 'A' && vm_account->name[i] <= 'Z') &&
             !(vm_account->name[i] >= '0' && vm_account->name[i] <= '9') &&
-            !(vm_account->name[i] != '-')) {
+            !(vm_account->name[i] == '-')) {
             puts("[-] Invalid character in name.");
             return -1;
         }
