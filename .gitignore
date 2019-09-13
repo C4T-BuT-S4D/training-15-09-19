@@ -23,4 +23,7 @@ binaries/
 sources/
 db-data
 
-!.keep
+!services/kekustotal/resources/files/.keep
+!services/kekustotal/resources/perms/.keep
+!services/kekustotal/resources/signs/.keep
+!services/kekustotal/resources/stats/.keep
