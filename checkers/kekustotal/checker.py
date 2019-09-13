@@ -67,6 +67,37 @@ def get(host, flag_id, flag, vuln):
 
     mch.check_get_signature(s2, ssize, stext, fId)
 
+    mch.check_add_signature(
+        s2,
+        ssize,
+        stext,
+        fId,
+        fType,
+        choice(["malware", "worm", "trojan", "virus"])
+    )
+
+    assert_in('session', s2.cookies, 'Invalid session')
+
+    uid3 = s2.cookies['session']
+
+    mch.invite(s, uid, fId)
+
+    sign = mch.check_add_signature(
+        s2,
+        ssize,
+        stext,
+        fId,
+        choice(["malware", "worm", "trojan", "virus"])
+    )
+
+    mch.check_info(s2, fId, 1, 0, [
+        {'res': 'virus', 'sign': sign}
+    ])
+
+    l = mch.list_no_auth()
+
+    assert_in(fId, l, 'Could not find flag file')
+
     cquit(Status.OK)
 
 
