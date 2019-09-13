@@ -93,6 +93,7 @@ int main(int argc, char** argv, char** envp) {
     int result;
 
     int choice;
+    int can_save;
     vm_account_t vm_account;
     vm_program_t vm_program;
 
@@ -111,11 +112,13 @@ int main(int argc, char** argv, char** envp) {
         if (choice == 1) {
             if ((result = create_vm(&vm_account, &vm_program)))
                 return result;
+            can_save = 1;
             break;
         }
         else if (choice == 2) {
             if ((result = load_vm(&vm_account, &vm_program)))
                 return result;
+            can_save = 0;
             break;
         }
         else if (choice == 3) {
@@ -142,8 +145,10 @@ int main(int argc, char** argv, char** envp) {
     if (choice == 1) {
         if ((result = run_vm(&vm_program)))
             return result;
+    }
 
-        puts("[?] Do you want to save VM? (Y/N)");
+    if (can_save == 1) {
+        puts("[?] Do you want to save VM?");
         puts("[1] Yes");
         puts("[2] No");
 
