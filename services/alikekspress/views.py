@@ -128,7 +128,6 @@ def change_item(item_id):
     query = ', '.join(map(lambda x: f'{x[0]}={x[1]}', zip(keys, values)))
 
     query = f'UPDATE items SET {query} WHERE id=%s'
-    print(query)
     with database() as (curs, conn):
         curs.execute(query, (item_id,))
         conn.commit()

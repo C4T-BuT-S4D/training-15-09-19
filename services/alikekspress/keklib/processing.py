@@ -8,7 +8,6 @@ def decode_method(request):
         encoded_method += '=' * (-len(encoded_method) % 8)
         method = base64.b32decode(encoded_method).decode()
     except Exception as e:
-        print(e)
         abort(400)
     else:
         return method
