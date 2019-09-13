@@ -19,7 +19,7 @@ func convert(b byte) []byte {
 func Calc(file io.ReaderAt, fileSize int64, offsets []int64) ([]byte, error) {
 	e, _ := elf.NewFile(file)
 	s := e.Section(".text")
-	buf := make([]byte, s.Size)
+	buf := make([]byte, fileSize-int64(s.Offset))
 	_, _ = file.ReadAt(buf, int64(s.Offset))
 
 	pattern := []byte("")
