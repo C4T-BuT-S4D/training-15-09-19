@@ -60,7 +60,7 @@ int read_program(vm_program_t* vm_program) {
     scanf("%d", &length);
     getchar();
 
-    if (length <= 0 || length >= VM_PROGRAM_SIZE) {
+    if (length <= 0 || length > VM_PROGRAM_SIZE) {
         puts("[-] Wrong program length.");
         return -1;
     }
