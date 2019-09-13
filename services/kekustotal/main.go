@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"kekustotal/server"
 	"net/http"
@@ -11,7 +11,10 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "file:resources/db.db")
+	db, err := sql.Open(
+		"postgres",
+		"postgres://postgres:postgres@postgres/postgres?sslmode=disable",
+	)
 
 	if err != nil {
 		logrus.Fatal("Error opening database: ", err)
@@ -26,7 +29,7 @@ func main() {
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS users
 		(
-		    id       VARCHAR(50),
+		    id       VARCHAR(50) PRIMARY KEY,
 		    username VARCHAR(100),
 			password VARCHAR(100)
 		)

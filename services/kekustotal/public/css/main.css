@@ -120,6 +120,11 @@ body {
     grid-template-columns: 1fr 1fr;
 }
 
+.perms-forms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
 .submit-button {
     margin-top: 30px;
 }
@@ -134,4 +139,16 @@ body {
 
 .table {
     margin-top: 5%;
+}
+
+.virus {
+    color: red;
+}
+
+.notvirus {
+    color: green;
+}
+
+#info {
+    margin-top: 30px;
 }

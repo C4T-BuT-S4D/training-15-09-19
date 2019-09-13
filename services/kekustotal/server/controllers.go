@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/karrick/godirwalk"
 	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -45,7 +46,7 @@ func register(db *sql.DB) http.HandlerFunc {
 			row := db.QueryRow(`
 				SELECT COUNT(*)
 				FROM users
-				WHERE username=?
+				WHERE username=$1
 			`, username)
 
 			var cnt int
@@ -80,7 +81,7 @@ func register(db *sql.DB) http.HandlerFunc {
 				)
 				VALUES
 				(
-					?, ?, ?
+					$1, $2, $3
 				)
 			`, idx, username, password)
 
@@ -110,7 +111,7 @@ func login(db *sql.DB) http.HandlerFunc {
 			row := db.QueryRow(`
 				SELECT id
 				FROM users
-				WHERE username=? and password=?
+				WHERE username=$1 and password=$2
 			`, username, password)
 
 			var idx string
@@ -136,7 +137,7 @@ func login(db *sql.DB) http.HandlerFunc {
 			})
 
 			j := map[string]interface{}{
-				"ok":    true,
+				"ok":     true,
 				"result": "OK",
 			}
 			ret, _ := json.Marshal(j)
@@ -232,11 +233,18 @@ func invite(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		f, _ = os.Create(fmt.Sprintf("resources/perms/%s-%s", userIdx, fileIdx))
+		f, err = os.Create(fmt.Sprintf("resources/perms/%s-%s", userIdx, fileIdx))
 
 		_, _ = f.Write([]byte("access"))
 
 		_ = f.Close()
+
+		j := map[string]interface{}{
+			"ok":     true,
+			"result": "OK",
+		}
+		ret, _ := json.Marshal(j)
+		_, _ = w.Write(ret)
 	}
 }
 
@@ -282,12 +290,19 @@ func forbid(w http.ResponseWriter, r *http.Request) {
 		_, _ = f.Write([]byte("forbid"))
 
 		_ = f.Close()
+
+		j := map[string]interface{}{
+			"ok":     true,
+			"result": "OK",
+		}
+		ret, _ := json.Marshal(j)
+		_, _ = w.Write(ret)
 	}
 }
 
 func list(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		files, err := ioutil.ReadDir("resources/files")
+		files, err := godirwalk.ReadDirnames("resources/files", nil)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -295,17 +310,9 @@ func list(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var res []string
-
-		for _, f := range files {
-			if !f.IsDir() && !strings.HasPrefix(f.Name(), ".") {
-				res = append(res, f.Name())
-			}
-		}
-
 		j := map[string]interface{}{
 			"ok":     true,
-			"result": res,
+			"result": files,
 		}
 		ret, _ := json.Marshal(j)
 
@@ -351,8 +358,6 @@ func download(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-
-
 		f, err = os.Open(fmt.Sprintf("resources/files/%s", fileIdx))
 
 		if err != nil {
@@ -365,14 +370,14 @@ func download(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		content, _  := ioutil.ReadAll(f)
+		content, _ := ioutil.ReadAll(f)
 
 		_ = f.Close()
 
 		res := base64.StdEncoding.EncodeToString(content)
 
 		j := map[string]interface{}{
-			"ok":    true,
+			"ok":     true,
 			"result": res,
 		}
 		ret, _ := json.Marshal(j)
@@ -419,10 +424,10 @@ func info(w http.ResponseWriter, r *http.Request) {
 			f, _ = os.Open(fmt.Sprintf("resources/signs/%s", p))
 			buf, _ := ioutil.ReadAll(f)
 			_ = f.Close()
-			b64 := base64.StdEncoding.EncodeToString(buf)
+			b64 := base64.StdEncoding.EncodeToString([]byte(p))
 			reviews = append(reviews, map[string]string{
-				"sign": p,
-				"res":  b64,
+				"sign": b64,
+				"res":  string(buf),
 			})
 		}
 
@@ -446,7 +451,7 @@ func signature(w http.ResponseWriter, r *http.Request) {
 		fileIdx := r.FormValue("fileId")
 		fileType := r.FormValue("fileType")
 
-		if fileType == "malware" || fileType == "trojan" || fileType == "warm" {
+		if fileType == "malware" || fileType == "trojan" || fileType == "worm" {
 			fileType = "virus"
 		}
 
@@ -454,24 +459,32 @@ func signature(w http.ResponseWriter, r *http.Request) {
 
 		f, err := os.Open(fmt.Sprintf("resources/perms/%s-%s", s.Value, fileIdx))
 
-		if err == nil {
-			access, _ := ioutil.ReadAll(f)
+		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
 
-			_ = f.Close()
-
-			if !bytes.Equal(access, []byte("access")) {
-				w.WriteHeader(http.StatusForbidden)
-
-				j := map[string]interface{}{
-					"ok":    false,
-					"error": "No access",
-				}
-				ret, _ := json.Marshal(j)
-				_, _ = w.Write(ret)
-				return
+			j := map[string]interface{}{
+				"ok":    false,
+				"error": "No access",
 			}
+			ret, _ := json.Marshal(j)
+			_, _ = w.Write(ret)
+			return
+		}
 
-			_ = f.Close()
+		access, _ := ioutil.ReadAll(f)
+
+		_ = f.Close()
+
+		if !bytes.Equal(access, []byte("access")) {
+			w.WriteHeader(http.StatusForbidden)
+
+			j := map[string]interface{}{
+				"ok":    false,
+				"error": "No access",
+			}
+			ret, _ := json.Marshal(j)
+			_, _ = w.Write(ret)
+			return
 		}
 
 		file, err := os.Open(fmt.Sprintf("resources/files/%s", fileIdx))
@@ -513,18 +526,6 @@ func signature(w http.ResponseWriter, r *http.Request) {
 		pattern, err := patterns.Calc(file, stat.Size(), offsets)
 
 		_ = file.Close()
-
-		if len(offsets) != 16 {
-			w.WriteHeader(http.StatusBadRequest)
-
-			j := map[string]interface{}{
-				"ok":    false,
-				"error": "Invalid offsets",
-			}
-			ret, _ := json.Marshal(j)
-			_, _ = w.Write(ret)
-			return
-		}
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -585,10 +586,8 @@ func signature(w http.ResponseWriter, r *http.Request) {
 		b64 := base64.StdEncoding.EncodeToString(pattern)
 
 		j := map[string]interface{}{
-			"ok": true,
-			"result": map[string]string{
-				"pattern": b64,
-			},
+			"ok":     true,
+			"result": b64,
 		}
 		ret, _ := json.Marshal(j)
 
@@ -636,18 +635,6 @@ func signature(w http.ResponseWriter, r *http.Request) {
 
 		_ = file.Close()
 
-		if len(offsets) != 16 {
-			w.WriteHeader(http.StatusBadRequest)
-
-			j := map[string]interface{}{
-				"ok":    false,
-				"error": "Invalid offsets",
-			}
-			ret, _ := json.Marshal(j)
-			_, _ = w.Write(ret)
-			return
-		}
-
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 
@@ -663,10 +650,8 @@ func signature(w http.ResponseWriter, r *http.Request) {
 		b64 := base64.StdEncoding.EncodeToString(pattern)
 
 		j := map[string]interface{}{
-			"ok": true,
-			"result": map[string]string{
-				"pattern":  b64,
-			},
+			"ok":     true,
+			"result": b64,
 		}
 		ret, _ := json.Marshal(j)
 

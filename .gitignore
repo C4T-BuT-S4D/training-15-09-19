@@ -18,3 +18,7 @@ obj/
 *.til
 
 db.db
+resources/
+binaries/
+sources/
+db-data

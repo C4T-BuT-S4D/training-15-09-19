@@ -14,10 +14,10 @@ type HttpServer struct {
 func NewServer(router *http.ServeMux) *HttpServer {
 	return &HttpServer{
 		h: &http.Server{
-			Addr: "0.0.0.0:8080",
-			ReadTimeout: time.Second * 15,
+			Addr:         "0.0.0.0:8080",
+			ReadTimeout:  time.Second * 15,
 			WriteTimeout: time.Second * 15,
-			Handler: router,
+			Handler:      router,
 		},
 	}
 }

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  kekustotal:
+    build: .
+    ports:
+      - "7001:8080"
+    restart: on-failure
+    volumes:
+      - ./resources:/app/resources
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    restart: on-failure
+    volumes:
+      - ./db-data:/var/lib/postgresql/data

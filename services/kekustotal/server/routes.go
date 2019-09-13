@@ -13,10 +13,10 @@ func SetupRoutes(router *http.ServeMux, db *sql.DB) {
 	router.HandleFunc("/api/upload/", withJsonResponse(loginRequired(upload, db)))
 	router.HandleFunc("/api/invite/", withJsonResponse(loginRequired(invite, db)))
 	router.HandleFunc("/api/forbid/", withJsonResponse(loginRequired(forbid, db)))
-	router.HandleFunc("/api/list/", withJsonResponse(list))
-	router.HandleFunc("/api/info/", withJsonResponse(loginRequired(info, db)))
+	router.HandleFunc("/api/list/", withGzipCompression(withJsonResponse(list)))
+	router.HandleFunc("/api/info/", withJsonResponse(info))
 
-	router.HandleFunc("/download/", withJsonResponse(loginRequired(download, db)))
+	router.HandleFunc("/api/download/", withJsonResponse(loginRequired(download, db)))
 
 	fs := http.FileServer(http.Dir("public"))
 

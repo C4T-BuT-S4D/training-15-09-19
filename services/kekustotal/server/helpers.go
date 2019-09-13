@@ -23,7 +23,7 @@ func GetUser(r *http.Request, db *sql.DB) *User {
 	row := db.QueryRow(`
 		SELECT id, username
 		FROM users
-		WHERE id=?
+		WHERE id=$1
 	`, s.Value)
 
 	var u User

@@ -33,11 +33,39 @@
     </form>
 </div>
 
+<div class="perms-forms">
+    <form class="form" id="perms-form-1">
+        <label for="userId">Invite user</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="User id"
+            name="userId"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Submit
+        </button>
+    </form>
+    <form class="form" id="perms-form-2">
+        <label for="userId">Forbid user</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="User id"
+            name="userId"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Submit
+        </button>
+    </form>
+</div>
+
+<div id="info"></div>
+
 <table class="table table-bordered">
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">id</th>
             <th scope="col">sign</th>
             <th scope="col">review</th>
         </tr>
@@ -70,7 +98,7 @@
         formData += `&fileId=${fileId}`;
 
         const onSuccess = function(json) {
-            put(json.result.pattern);
+            put(json.result);
             location.reload();
         };
 
@@ -96,7 +124,7 @@
         formData += `&fileId=${fileId}`;
 
         const onSuccess = function(json) {
-            tSuccess(json.result.pattern);
+            tSuccess(json.result);
         };
 
         const onError = function(resp) {
@@ -113,12 +141,81 @@
         });
     });
 
-    let info = {};
+    $("#perms-form-1").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            tSuccess(json.result);
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/invite/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    $("#perms-form-2").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            tSuccess(json.result);
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/forbid/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
 
     const onSuccess = function(json) {
         info = json.result;
 
-        console.log(info);
+        $("#info").append(`
+            <div class="virus">Virus: ${info.virus}</div>
+            <div class="notvirus">Not virus: ${info.notVirus}</div>
+        `);
+
+        const reviews = info.reviews;
+
+        for (let i = 0; i < reviews.length; i += 1) {
+            let sign = reviews[i].sign;
+            let res = reviews[i].res;
+            $("table tbody").append(`
+                <tr>
+                    <th scope="row">${i + 1}</th>
+                    <td>
+                        ${sign}
+                    </td>
+                    <td>
+                        ${res}
+                    </td>
+                </tr>
+            `);
+        }
     };
 
     const onError = function(resp) {

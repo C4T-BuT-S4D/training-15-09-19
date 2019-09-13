@@ -73,36 +73,38 @@
         let mouseX = null;
         let mouseY = null;
         let go = false;
-        // $(document).mousemove(function(event) {
-        //     mouseX = event.pageX;
-        //     mouseY = event.pageY;
-        // });
-        // $(".navbar").mousemove(function(event) {
-        //     if (!go) {
-        //         go = true;
-        //         setInterval(function() {
-        //             const logo = $(".logo").first();
-        //             let off = logo.offset();
-        //             let logoX = off.left;
-        //             let logoY = off.top;
+        $(document).mousemove(function(event) {
+            mouseX = event.pageX;
+            mouseY = event.pageY;
+        });
+        const callback = function (event) {
+            if (!go) {
+                go = true;
+                setInterval(function () {
+                    const logo = $(".logo").first();
+                    let off = logo.offset();
+                    let logoX = off.left;
+                    let logoY = off.top;
 
-        //             let vecX = mouseX - logoX - logo.width() / 2;
-        //             let vecY = mouseY - logoY - logo.height() / 2;
+                    let vecX = mouseX - logoX - logo.width() / 2;
+                    let vecY = mouseY - logoY - logo.height() / 2;
 
-        //             const len = vecLength(vecX, vecY);
+                    const len = vecLength(vecX, vecY);
 
-        //             if (len > speed) {
-        //                 vecX = (vecX * speed) / len;
-        //                 vecY = (vecY * speed) / len;
-        //             }
+                    if (len > speed) {
+                        vecX = (vecX * speed) / len;
+                        vecY = (vecY * speed) / len;
+                    }
 
-        //             logo.offset({
-        //                 left: logoX + vecX,
-        //                 top: logoY + vecY
-        //             });
-        //         }, 10);
-        //     }
-        // });
+                    logo.offset({
+                        left: logoX + vecX,
+                        top: logoY + vecY
+                    });
+                }, 10);
+            }
+        };
+        $(".navbar-2").mousemove(callback);
+        $(".navbar-3").mousemove(callback);
     </script>
 
     <script>
