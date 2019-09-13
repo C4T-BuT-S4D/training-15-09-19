@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - "7000:8000"
     restart: on-failure
     tty: true
 

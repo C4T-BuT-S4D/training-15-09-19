@@ -1,5 +1,7 @@
 FROM python:3.7-alpine
 
+MAINTAINER tg: @pomo_mondreganto
+
 ENV PYTHONUNBUFFERED=1
 
 RUN apk add gcc musl-dev

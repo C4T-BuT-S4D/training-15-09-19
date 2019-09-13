@@ -3,7 +3,7 @@ import requests
 from checklib import *
 
 
-PORT = 8000
+PORT = 7000
 
 
 def make_request(module, method, url, **kwargs):
@@ -104,5 +104,3 @@ class CheckMachine:
 		r = make_request(sess, 'buy_item', f'{self.url}/buy/{item_id}/')
 		check_response(r, 'Could not buy item')
 		return get_json(r, 'Could not buy item')
-
-		
