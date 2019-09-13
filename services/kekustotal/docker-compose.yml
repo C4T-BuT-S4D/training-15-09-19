@@ -4,13 +4,13 @@ services:
     build: .
     ports:
       - "7001:8080"
-    restart: on-failure
+    restart: always
     volumes:
       - ./resources:/app/resources
     depends_on:
       - postgres
   postgres:
     image: postgres
-    restart: on-failure
+    restart: always
     volumes:
       - ./db-data:/var/lib/postgresql/data
