@@ -17,13 +17,12 @@ obj/
 *.nam
 *.til
 
-db.db
-resources/
-binaries/
-sources/
-db-data
-
 !services/kekustotal/resources/files/.keep
 !services/kekustotal/resources/perms/.keep
 !services/kekustotal/resources/signs/.keep
 !services/kekustotal/resources/stats/.keep
+
+resources/
+binaries/
+sources/
+db-data/
