@@ -21,3 +21,8 @@ resources/
 binaries/
 sources/
 db-data/
+
+.gdb_history
+core
+
+machines

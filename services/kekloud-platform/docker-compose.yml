@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  kpl:
+    build: .
+    ports:
+      - 7002:31337
+    restart: always
+    volumes:
+      - ./machines:/var/kpl/machines
