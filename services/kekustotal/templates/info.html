@@ -1,0 +1,280 @@
+{{define "content"}}
+<button type="button" class="btn button-water" id="download">
+    Download
+</button>
+<div class="pattern-forms">
+    <form class="form" id="pattern-form-1">
+        <label for="fileType">file type</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="virus"
+            name="fileType"
+        />
+        <label for="offsets">offsets</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+            name="offsets"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Add signature
+        </button>
+    </form>
+    <form class="form" id="pattern-form-2">
+        <label for="offsets">offsets</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+            name="offsets"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Get signature
+        </button>
+    </form>
+</div>
+
+<div class="perms-forms">
+    <form class="form" id="perms-form-1">
+        <label for="userId">Invite user</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="User id"
+            name="userId"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Submit
+        </button>
+    </form>
+    <form class="form" id="perms-form-2">
+        <label for="userId">Forbid user</label>
+        <input
+            type="text"
+            class="form-control"
+            placeholder="User id"
+            name="userId"
+        />
+        <button type="submit" class="btn button-blue submit-button">
+            Submit
+        </button>
+    </form>
+</div>
+
+<div id="info"></div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">sign</th>
+            <th scope="col">review</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    function findGetParameter(parameterName) {
+        var result = null,
+            tmp = [];
+        location.search
+            .substr(1)
+            .split("&")
+            .forEach(function(item) {
+                tmp = item.split("=");
+                if (tmp[0] === parameterName)
+                    result = decodeURIComponent(tmp[1]);
+            });
+        return result;
+    }
+
+    function download(filename, text) {
+        var element = document.createElement("a");
+        element.setAttribute(
+            "href",
+            "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+        );
+        element.setAttribute("download", filename);
+
+        element.style.display = "none";
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    $("#download").click(function() {
+        const onSuccess = function(json) {
+            try {
+                download("file", atob(json.result));
+            } catch {
+                tError("Invalid file");
+            }
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "GET",
+            url: "/api/download/",
+            data: {
+                fileId: findGetParameter("fileId")
+            },
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    const fileId = findGetParameter("fileId");
+
+    $("#pattern-form-1").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            put(json.result);
+            location.reload();
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/signature/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    $("#pattern-form-2").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            tSuccess(json.result);
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "GET",
+            url: "/api/signature/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    $("#perms-form-1").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            tSuccess(json.result);
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/invite/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    $("#perms-form-2").submit(function(event) {
+        event.preventDefault();
+
+        let formData = $(this).serialize();
+
+        formData += `&fileId=${fileId}`;
+
+        const onSuccess = function(json) {
+            tSuccess(json.result);
+        };
+
+        const onError = function(resp) {
+            const json = resp.responseJSON;
+            tError(json.error);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/api/forbid/",
+            data: formData,
+            success: onSuccess,
+            error: onError
+        });
+    });
+
+    const onSuccess = function(json) {
+        info = json.result;
+
+        $("#info").append(`
+            <div class="virus">Virus: ${info.virus}</div>
+            <div class="notvirus">Not virus: ${info.notVirus}</div>
+        `);
+
+        const reviews = info.reviews;
+
+        for (let i = 0; i < reviews.length; i += 1) {
+            let sign = reviews[i].sign;
+            let res = reviews[i].res;
+            $("table tbody").append(`
+                <tr>
+                    <th scope="row">${i + 1}</th>
+                    <td>
+                        ${sign}
+                    </td>
+                    <td>
+                        ${res}
+                    </td>
+                </tr>
+            `);
+        }
+    };
+
+    const onError = function(resp) {
+        const json = resp.responseJSON;
+        tError(json.error);
+    };
+
+    $.ajax({
+        type: "GET",
+        url: "/api/info/",
+        data: {
+            fileId: findGetParameter("fileId")
+        },
+        success: onSuccess,
+        error: onError
+    });
+</script>
+{{ end }}

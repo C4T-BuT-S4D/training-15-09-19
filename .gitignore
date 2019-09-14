@@ -16,3 +16,8 @@ obj/
 *.id[012]
 *.nam
 *.til
+
+resources/
+binaries/
+sources/
+db-data/
