@@ -6,7 +6,7 @@ from elftools.elf.elffile import ELFFile
 from binary_lib import generate_binary
 
 
-PORT = 8080
+PORT = 7001
 
 class CheckMachine:
 
