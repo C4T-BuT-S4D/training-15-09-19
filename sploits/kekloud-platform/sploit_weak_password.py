@@ -19,8 +19,10 @@ def execute_vm_program(io_factory, vm_name, vm_password):
         io.sendlineafter('password:\n', vm_password)
         io.sendlineafter('No\n', '1')
 
-        log.info(io.recvline()[:-1])
-        log.info(io.recvline()[:-1])
+        message = io.recvline()[:-1]
+        log.info(message)
+        if 'protected' not in message:
+            log.info(io.recvline()[:-1])
     finally:
         io.close()
 
