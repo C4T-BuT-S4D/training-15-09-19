@@ -79,7 +79,6 @@ def get(host, flag_id, flag, vuln):
         ssize,
         stext,
         fId,
-        fType,
         choice(["malware", "worm", "trojan", "virus"]),
         False
     )
@@ -90,7 +89,7 @@ def get(host, flag_id, flag, vuln):
 
     mch.invite(s, uid, fId)
 
-    sign = mch.check_add_signature(
+    sign2 = mch.check_add_signature(
         s2,
         ssize,
         stext,
@@ -98,8 +97,9 @@ def get(host, flag_id, flag, vuln):
         choice(["malware", "worm", "trojan", "virus"])
     )
 
-    mch.check_info(s2, fId, 1, 0, [
-        {'res': 'virus', 'sign': sign}
+    mch.check_info(s2, fId, 1, 1, [
+        {'res': fType, 'sign': sign},
+        {'res': 'virus', 'sign': sign2}
     ])
 
     l = mch.list_no_auth()
