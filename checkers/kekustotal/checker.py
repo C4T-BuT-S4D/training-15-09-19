@@ -58,7 +58,7 @@ def get(host, flag_id, flag, vuln):
 
     mch.check_info(s, fId, 0, 1, [
         {'res': fType, 'sign': sign}
-    ])
+    ], True)
 
     with open(b, "rb") as f:
         elf = ELFFile(f)
@@ -85,7 +85,7 @@ def get(host, flag_id, flag, vuln):
 
     assert_in('session', s2.cookies, 'Invalid session')
 
-    uid3 = s2.cookies['session']
+    uid = s2.cookies['session']
 
     mch.invite(s, uid, fId)
 
@@ -100,7 +100,7 @@ def get(host, flag_id, flag, vuln):
     mch.check_info(s2, fId, 1, 1, [
         {'res': fType, 'sign': sign},
         {'res': 'virus', 'sign': sign2}
-    ])
+    ], True)
 
     l = mch.list_no_auth()
 

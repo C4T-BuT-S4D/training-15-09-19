@@ -157,20 +157,35 @@ class CheckMachine:
         return get_json(r, 'Got invalid json response').get('result')
 
 
-    def check_info(self, sess, fId, virus, notvirus, reviews):
+    def check_info(self, sess, fId, virus, notvirus, reviews, checkIn=False):
         i = self.info(sess, fId)
-        assert_in('virus', i, 'Incorrect info')
-        assert_eq(i.get('virus'), virus, 'Incorrect info')
-        assert_in('notVirus', i, 'Incorrect info')
-        assert_eq(i.get('notVirus'), notvirus, 'Incorrect info')
-        assert_in('reviews', i, 'Incorrect info')
 
-        try:
-            if sorted(i.get('reviews'), key=lambda k: (k['res'], k['sign'])) !=\
-               sorted(reviews         , key=lambda k: (k['res'], k['sign'])):
-                raise Exception("Invalid json on /info")
-        except:
-            cquit(Status.MUMBLE, "Invalid json on /info", "Invalid json on /info")
+        if checkIn:
+            assert_in('virus', i, 'Incorrect info')
+            assert_gte(i.get('virus'), virus, 'Incorrect info')
+            assert_in('notVirus', i, 'Incorrect info')
+            assert_gte(i.get('notVirus'), notvirus, 'Incorrect info')
+            assert_in('reviews', i, 'Incorrect info')
+
+            try:
+                for j in reviews:
+                    if j not in i.get('reviews'):
+                        cquit(Status.CORRUPT, 'Could not find signature', 'Could not find signature')
+            except:
+                cquit(Status.MUMBLE, "Invalid json on /info", "Invalid json on /info")
+        else:
+            assert_in('virus', i, 'Incorrect info')
+            assert_eq(i.get('virus'), virus, 'Incorrect info')
+            assert_in('notVirus', i, 'Incorrect info')
+            assert_eq(i.get('notVirus'), notvirus, 'Incorrect info')
+            assert_in('reviews', i, 'Incorrect info')
+
+            try:
+                if sorted(i.get('reviews'), key=lambda k: (k['res'], k['sign'])) !=\
+                   sorted(reviews         , key=lambda k: (k['res'], k['sign'])):
+                    raise Exception("Invalid json on /info")
+            except:
+                cquit(Status.MUMBLE, "Invalid json on /info", "Invalid json on /info")
 
 
     def check_add_signature(self, sess, ssize, stext, fId, comment, ok=True):
