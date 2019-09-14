@@ -7,6 +7,9 @@ from helpers import FlagInfo, SocketIO
 from checklib import Status, cquit, rnd_string
 from generators import generate_simple, generate_encrypted, generate_checking
 
+import os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 PORT    = 7002
 TIMEOUT = 10

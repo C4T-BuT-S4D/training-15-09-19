@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import re
 
 from struct import pack, unpack
@@ -182,7 +183,9 @@ def generate_encrypted(flag, password):
 
 def get_output(program):
     payload = str(len(program)).encode() + b'\n' + pack_program(program)
-    process = Popen(['./runner'], stdin=PIPE, stdout=PIPE)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    runner_path = os.path.join(base_dir, 'runner')
+    process = Popen([runner_path], stdin=PIPE, stdout=PIPE)
     result = process.communicate(payload)[0]
     code = re.findall(rb'\d+', result)[-1]
     return result[:-len(code)-1], code
@@ -369,3 +372,4 @@ def generate_checking():
     ])
     output, code = get_output(program)
     return pack_program(program), len(program), output, code
+
