@@ -80,7 +80,8 @@ def get(host, flag_id, flag, vuln):
         stext,
         fId,
         fType,
-        choice(["malware", "worm", "trojan", "virus"])
+        choice(["malware", "worm", "trojan", "virus"]),
+        False
     )
 
     assert_in('session', s2.cookies, 'Invalid session')
