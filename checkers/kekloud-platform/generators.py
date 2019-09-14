@@ -16,7 +16,7 @@ SIMPLE_MESSAGES = [
     'keks were here\n',
     'by C4T BuT S4D with love <3\n',
     'does ker mean haker?\n',
-    'how did you see this?\nwelcome to out training\n'
+    'how did you see this?\rwelcome to our training\n'
 ]
 
 ENCRYPTED_MESSAGE = 'Flag is protected! Input password:\n'
