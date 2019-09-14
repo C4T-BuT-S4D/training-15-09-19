@@ -39,11 +39,11 @@ def check(host):
         io.recvlines(4)
         io.sendline(b'1')
         # checking output
-        result = io.recvline()
-        if output.strip() != result.strip().decode():
+        result = io.recvline() + b'\n' + io.recv(16)
+        if output not in result:
             cquit(Status.MUMBLE, 'Invalid checking value')
         result = io.recvline()
-        if f'code {code}' not in result:
+        if b'code ' + code not in result:
             cquit(Status.MUMBLE, 'Invalid checking code')
         # save vm (Yes)
         io.recvlines(3)
@@ -87,7 +87,7 @@ def check(host):
         # send vm info
         io.recvline()
         io.sendline(flag_info.vm_name.encode())
-        if 'Invalid character' in io.recvline():
+        if b'Invalid character' in io.recvline():
             cquit(Status.MUMBLE, 'Name does not require restrictions')
         io.sendline(flag_info.vm_password.encode())
         answer = io.recvline()
@@ -101,11 +101,11 @@ def check(host):
         io.recvlines(3)
         io.sendline(b'1')
         # checking output
-        result = io.recvline()
-        if output.strip() != result.strip().decode():
+        result = io.recvline() + b'\n' + io.recv(16)
+        if output not in result:
             cquit(Status.MUMBLE, 'Invalid checking value')
         result = io.recvline()
-        if f'code {code}'.encode() not in result:
+        if b'code ' + code not in result:
             cquit(Status.MUMBLE, 'Invalid checking code')
         # save vm (No)
         io.recvlines(3)
@@ -116,6 +116,8 @@ def check(host):
         cquit(Status.MUMBLE, 'Error while checking flag', f'Error while checking flag: {str(e)}')
     finally:
         io.close()
+
+    cquit(Status.OK)
 
 
 def put(host, flag_id, flag, vuln):
