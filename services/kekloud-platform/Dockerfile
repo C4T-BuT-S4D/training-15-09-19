@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-MAINTAINER @keltecc
+MAINTAINER tg: @keltecc
 
 RUN apt update && \
     apt install -y socat
