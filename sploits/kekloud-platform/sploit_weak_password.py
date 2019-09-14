@@ -50,5 +50,5 @@ def main(io_factory):
 
 
 if __name__ == '__main__':
-    io_factory = lambda: remote(sys.argv[1], 5555)
+    io_factory = lambda: remote(sys.argv[1], 7002)
     main(io_factory)

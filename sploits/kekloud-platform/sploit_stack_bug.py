@@ -55,7 +55,7 @@ def main(io):
 
 
 if __name__ == '__main__':
-    io = remote(sys.argv[1], 5555)
+    io = remote(sys.argv[1], 7002)
     try:
         main(io)
     finally:
