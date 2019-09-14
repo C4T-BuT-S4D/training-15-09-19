@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
+import re
+
 from struct import pack, unpack
 from random import shuffle, randint, choice
+from subprocess import Popen, PIPE
+
 from constants import *
 
 
@@ -21,6 +25,10 @@ ENCRYPTED_FAIL    = 'No!\n'
 
 def rand():
     return randint(-(1<<31), 1<<31 - 1)
+
+
+def randl(n=31):
+    return rand() % (1 << n)
 
 
 def rand2():
@@ -172,5 +180,192 @@ def generate_encrypted(flag, password):
     return pack_program(program), len(program)
 
 
+def get_output(program):
+    payload = str(len(program)).encode() + b'\n' + pack_program(program)
+    process = Popen(['./runner'], stdin=PIPE, stdout=PIPE)
+    result = process.communicate(payload)[0]
+    code = re.findall(rb'\d+', result)[-1]
+    return result[:-len(code)-1], code
+
+
 def generate_checking():
-    pass
+    consts = [abs(randl()) for i in range(8)]
+    regs = [REG_AX, REG_BX, REG_CX, REG_DX]
+    shuffle(regs)
+    val0, val1, val2, val3 = 1000, 1001, 1002, 1003
+    program_parts = [
+        # je, jne, jg, jge, jl, jle
+        [
+            OP_SET, regs[0], consts[0],
+            OP_SET, regs[1], consts[1],
+            OP_SET, regs[2], randl() % VM_PROGRAM_SIZE,
+            OP_CMP, regs[0], regs[1],
+            OP_JE, regs[2]
+        ],
+        [
+            OP_SET, regs[0], consts[2],
+            OP_SET, regs[1], consts[2],
+            OP_SET, regs[2], randl() % VM_PROGRAM_SIZE,
+            OP_CMP, regs[0], regs[1],
+            OP_JNE, regs[2]
+        ],
+        [
+            OP_SET, regs[0], consts[3] // 1337,
+            OP_SET, regs[1], consts[3],
+            OP_SET, regs[2], randl() % VM_PROGRAM_SIZE,
+            OP_CMP, regs[0], regs[1],
+            OP_JG, regs[2]
+        ],
+        [
+            OP_SET, regs[0], consts[4] // 1337,
+            OP_SET, regs[1], consts[4],
+            OP_SET, regs[2], randl() % VM_PROGRAM_SIZE,
+            OP_CMP, regs[0], regs[1],
+            OP_JGE, regs[2]
+        ],
+        [
+            OP_SET, regs[0], consts[5],
+            OP_SET, regs[1], consts[5] // 1337,
+            OP_SET, regs[2], randl() % VM_PROGRAM_SIZE,
+            OP_CMP, regs[0], regs[1],
+            OP_JL, regs[2]
+        ],
+        [
+            OP_SET, regs[0], consts[6],
+            OP_SET, regs[1], consts[6] // 1337,
+            OP_SET, regs[2], randl() % VM_PROGRAM_SIZE,
+            OP_CMP, regs[0], regs[1],
+            OP_JLE, regs[2]
+        ],
+        # not, and, or, xor, neg
+        [
+            OP_SET, regs[0], randl(),
+            OP_NOT, regs[0],
+            OP_XOR, val1, regs[0]
+        ],
+        [
+            OP_SET, regs[0], randl(),
+            OP_SET, regs[1], randl(),
+            OP_AND, regs[0], regs[1],
+            OP_XOR, val1, regs[0]
+        ],
+        [
+            OP_SET, regs[0], randl(),
+            OP_SET, regs[1], randl(),
+            OP_OR, regs[0], regs[1],
+            OP_XOR, val1, regs[0]
+        ],
+        [
+            OP_SET, regs[0], randl(),
+            OP_SET, regs[1], randl(),
+            OP_XOR, regs[0], regs[1],
+            OP_XOR, val1, regs[0]
+        ],
+        [
+            OP_SET, regs[0], randl(),
+            OP_NEG, regs[0],
+            OP_XOR, val1, regs[0]
+        ],
+        # inc, dec
+        [
+            OP_SET, regs[1], randl(),
+            OP_INC, regs[1],
+            OP_XOR, val2, regs[1]
+        ],
+        [
+            OP_SET, regs[1], randl(),
+            OP_DEC, regs[1],
+            OP_XOR, val2, regs[1]
+        ],
+        # add, sub, mul, div, mod
+        [
+            OP_SET, regs[2], randl(),
+            OP_SET, regs[3], randl(),
+            OP_ADD, regs[2], regs[3],
+            OP_XOR, val3, regs[2]
+        ],
+        [
+            OP_SET, regs[2], randl(),
+            OP_SET, regs[3], randl(),
+            OP_SUB, regs[2], regs[3],
+            OP_XOR, val3, regs[2]
+        ],
+        [
+            OP_SET, regs[2], randl(),
+            OP_SET, regs[3], randl(),
+            OP_MUL, regs[2], regs[3],
+            OP_XOR, val3, regs[2]
+        ],
+        [
+            OP_SET, regs[2], randl(),
+            OP_SET, regs[3], randl(),
+            OP_DIV, regs[2], regs[3],
+            OP_XOR, val3, regs[2]
+        ],
+        [
+            OP_SET, regs[2], randl(),
+            OP_SET, regs[3], randl(),
+            OP_MOD, regs[2], regs[3],
+            OP_XOR, val3, regs[2]
+        ],
+        # push, pop
+        [
+            OP_SET, regs[0], randl(),
+            OP_SET, regs[1], randl(),
+            OP_PUSH, regs[0],
+            OP_PUSH, regs[1],
+            OP_POP, regs[2],
+            OP_POP, regs[3],
+            OP_XOR, val0, regs[2],
+            OP_XOR, val1, regs[3]
+        ],
+        # nop
+        [
+            OP_NOP
+        ],
+        # syscalls
+        [
+            OP_SYS, SYS_BEEP
+        ]
+        # [
+        #     OP_SYS, SYS_RAND,
+        #     OP_XOR, val3, REG_AX
+        # ]
+    ]
+    shuffle(program_parts)
+    program = [
+        OP_SET, REG_AX, randl(),
+        OP_SYS, SYS_CLEAR,
+    ]
+    for part in program_parts:
+        program.extend(part)
+    program.extend([
+        # loop
+        OP_SET, REG_BP, randl(),
+        OP_SET, REG_CX, 2,
+        OP_SET, 100, len(program) + 9,
+        OP_INC, REG_BP,
+        OP_LOOP, 100,
+        OP_XOR, val0, REG_BP
+    ])
+    program.extend([
+        # call, ret
+        OP_SET, 100, len(program) + 11,
+        OP_SET, 101, len(program) + 14,
+        OP_SET, regs[3], randl(),
+        OP_JMP, 101,
+        OP_INC, regs[3],
+        OP_RET,
+        OP_CALL, 100,
+        OP_XOR, val0, regs[3]
+    ])
+    program.extend([
+        # write, exit
+        OP_SET, REG_AX, val0,
+        OP_SET, REG_BX, 16,
+        OP_SYS, SYS_WRITE,
+        OP_SET, REG_AX, consts[7],
+        OP_SYS, SYS_EXIT
+    ])
+    output, code = get_output(program)
+    return pack_program(program), len(program), output, code
