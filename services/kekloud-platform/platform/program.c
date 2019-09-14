@@ -46,6 +46,10 @@ int load_program(vm_program_t* vm_program, vm_account_t* vm_account) {
         return -1;
     }
 
+    fseek(file, 0, SEEK_END);
+    vm_program->length = ftell(file) / sizeof(int);
+    fseek(file, 0, SEEK_SET);
+
     fread(vm_program->program, sizeof(int), vm_program->length, file);
     fclose(file);
 
