@@ -216,7 +216,7 @@ def get(host, flag_id, flag, vuln):
         message = io.recvline()
         if b'VM exited' in message:
             cquit(Status.MUMBLE, 'VM does not work as expected', f'VM does not work as expected: {message}')
-        if int(b'protected' in message) ^ int(vuln == VULN_ENCRYPTED):
+        if (b'protected' in message) != (vuln == VULN_ENCRYPTED):
             cquit(Status.CORRUPT, 'Password requirements does not match', f'Password requirements does not match, vuln: {vuln}')
         if b'protected' in message:
             io.sendline(flag_info.flag_password.encode())
