@@ -39,6 +39,7 @@ def put(host, flag_id, flag, vuln):
         "fId": fId,
         "fType": fType,
         "sign": sign,
+        "b": b
     }))
 
 
@@ -47,7 +48,7 @@ def get(host, flag_id, flag, vuln):
     
     d = json.loads(flag_id)
 
-    u, p, fId, fType, sign = d["u"], d["p"], d["fId"], d["fType"], d["sign"]
+    u, p, fId, fType, sign, b = d["u"], d["p"], d["fId"], d["fType"], d["sign"], d["b"]
 
     s = mch.login_user(u, p)
 
@@ -58,6 +59,12 @@ def get(host, flag_id, flag, vuln):
     mch.check_info(s, fId, 0, 1, [
         {'res': fType, 'sign': sign}
     ])
+
+    with open(b, "rb") as f:
+        elf = ELFFile(f)
+        section = elf.get_section_by_name(".text")
+        stext = section.data()
+        ssize = section.data_size
 
     mch.check_get_signature(s, ssize, stext, fId)
 
