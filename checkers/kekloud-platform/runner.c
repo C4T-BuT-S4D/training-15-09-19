@@ -27,13 +27,12 @@ int main(int argc, char** argv, char** envp) {
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
-    scanf("%d", &vm_program.length);
-    getchar();
+    sscanf(argv[1], "%d", &vm_program.length);
 
     fread(vm_program.program, sizeof(int), vm_program.length, stdin);
 
     result = run_program(&vm_program, VM_LIMIT);
-    printf("%d\n", result);
+    fprintf(stderr, "%d\n", result);
 
     return 0;
 }
