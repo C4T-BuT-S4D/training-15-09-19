@@ -23,7 +23,7 @@
 
 - Ubuntu 18.04.1 LTS
 - Alpine/Ubuntu in Docker
-- [Файлы](/services/services.zip)
+- [Архив сервисов для команд](services/services.zip) ([Генерация](services/makezip.sh)
 
 
 ## Проверяющая система
