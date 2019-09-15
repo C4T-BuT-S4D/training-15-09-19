@@ -1,7 +1,7 @@
 from app import app
+from flask import request, session, abort, jsonify
 from keklib import decorators, security
 from keklib.database import database
-from flask import request, session, abort, jsonify
 
 
 @app.endpoint('register')
@@ -78,7 +78,7 @@ def edit_user():
 @app.endpoint('get_user')
 @decorators.with_allowed_methods(['user_get'])
 @decorators.login_required
-def edit_user():
+def get_user():
     with database(True) as (curs, _):
         query = 'SELECT id, username, money FROM users WHERE id=%s'
         curs.execute(query, (session['id'],))
