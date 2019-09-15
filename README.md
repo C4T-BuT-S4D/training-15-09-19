@@ -1,3 +1,36 @@
-# AD Trenya
+# Attack-Defence тренировка от C4T BuT S4D
 
-TBD
+Исходные коды сервисов, чекеры и сплоиты с тренировки 15 сентября 2019.
+
+
+## Результаты
+
+![Топ скорборда](scoreboard/top.png)
+
+[Полный финальный скорборд](scoreboard/full.png)
+
+
+## Сервисы
+
+| Сервис | Язык | Чекер | Сплоиты | Автор |
+|--------|------|-------|---------|-------|
+| **[alikekspress](services/alikekspress/)** | Python | [Чекер](checkers/alikekspress/) | [Сплоиты](sploits/alikekspress/) | [@pomo-mondreganto](https://github.com/pomo-mondreganto) |
+| **[kekustotal](services/kekustotal/)** | Golang | [Чекер](checkers/kekustotal/) | [Сплоиты](sploits/kekustotal/) | [@xmikasax](https://github.com/xmikasax) |
+| **[kekloud-platform](services/kekloud-platform/)** | C | [Чекер](checkers/kekloud-platform/) | [Сплоиты](sploits/kekloud-platform/) | [@keltecc](https://github.com/keltecc) |
+
+
+## Образ
+
+- Ubuntu 18.04.1 LTS
+- Alpine/Ubuntu in Docker
+- [Файлы](/services/services.zip)
+
+
+## Проверяющая система
+
+- [ForcAD](https://github.com/pomo-mondreganto/ForcAD)
+
+
+## Разбор
+
+To be developed...
