@@ -26,9 +26,10 @@
 - [Архив сервисов для команд](services/services.zip) ([Генерация](services/makezip.sh))
 
 
-## Проверяющая система
+## Инфраструктура
 
-- [ForcAD](https://github.com/pomo-mondreganto/ForcAD)
+- DevOps: [@pomo-mondreganto](https://github.com/pomo-mondreganto)
+- Проверяющая система: [ForcAD](https://github.com/pomo-mondreganto/ForcAD)
 
 
 ## Разбор
