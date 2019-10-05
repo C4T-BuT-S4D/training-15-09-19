@@ -34,4 +34,4 @@
 
 ## Разбор
 
-To be developed...
+[Разбор](https://www.youtube.com/watch?v=twM9eExiLhM)
