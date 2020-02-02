@@ -12,7 +12,7 @@ Sources of services, checkers and sploits from 15th September 2019 training.
 
 ## Services
 
-| Service | Lang | Checker | Sploit | Author |
+| Service | Lang | Checker | Sploits | Author |
 |--------|------|-------|---------|-------|
 | **[alikekspress](services/alikekspress/)** | Python | [Checker](checkers/alikekspress/) | [Sploits](sploits/alikekspress/) | [@pomo-mondreganto](https://github.com/pomo-mondreganto) |
 | **[kekustotal](services/kekustotal/)** | Golang | [Checker](checkers/kekustotal/) | [Sploits](sploits/kekustotal/) | [@xmikasax](https://github.com/xmikasax) |
