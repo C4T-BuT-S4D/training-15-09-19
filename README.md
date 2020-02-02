@@ -1,37 +1,37 @@
-# Attack-Defence тренировка от C4T BuT S4D
+# Attack-Defence training by C4T BuT S4D
 
-Исходные коды сервисов, чекеры и сплоиты с тренировки 15 сентября 2019.
-
-
-## Результаты
-
-![Топ скорборда](scoreboard/top.png)
-
-[Полный финальный скорборд](scoreboard/full.png)
+Sources of services, checkers and sploits from 15th September 2019 training.
 
 
-## Сервисы
+## Results
 
-| Сервис | Язык | Чекер | Сплоиты | Автор |
+![Top](scoreboard/top.png)
+
+[Full scoreboard](scoreboard/full.png)
+
+
+## Services
+
+| Service | Lang | Checker | Sploit | Author |
 |--------|------|-------|---------|-------|
-| **[alikekspress](services/alikekspress/)** | Python | [Чекер](checkers/alikekspress/) | [Сплоиты](sploits/alikekspress/) | [@pomo-mondreganto](https://github.com/pomo-mondreganto) |
-| **[kekustotal](services/kekustotal/)** | Golang | [Чекер](checkers/kekustotal/) | [Сплоиты](sploits/kekustotal/) | [@xmikasax](https://github.com/xmikasax) |
-| **[kekloud-platform](services/kekloud-platform/)** | C | [Чекер](checkers/kekloud-platform/) | [Сплоиты](sploits/kekloud-platform/) | [@keltecc](https://github.com/keltecc) |
+| **[alikekspress](services/alikekspress/)** | Python | [Checker](checkers/alikekspress/) | [Sploits](sploits/alikekspress/) | [@pomo-mondreganto](https://github.com/pomo-mondreganto) |
+| **[kekustotal](services/kekustotal/)** | Golang | [Checker](checkers/kekustotal/) | [Sploits](sploits/kekustotal/) | [@xmikasax](https://github.com/xmikasax) |
+| **[kekloud-platform](services/kekloud-platform/)** | C | [Checker](checkers/kekloud-platform/) | [Sploits](sploits/kekloud-platform/) | [@keltecc](https://github.com/keltecc) |
 
 
-## Образ
+## Image
 
 - Ubuntu 18.04.1 LTS
 - Alpine/Ubuntu in Docker
-- [Архив сервисов для команд](services/services.zip) ([Генерация](services/makezip.sh))
+- [Services archive](services/services.zip) ([Generation](services/makezip.sh))
 
 
-## Инфраструктура
+## Infrastructure
 
 - DevOps: [@pomo-mondreganto](https://github.com/pomo-mondreganto)
-- Проверяющая система: [ForcAD](https://github.com/pomo-mondreganto/ForcAD)
+- Checksystem: [ForcAD](https://github.com/pomo-mondreganto/ForcAD)
 
 
-## Разбор
+## Writeups
 
-[Разбор](https://www.youtube.com/watch?v=twM9eExiLhM)
+[Stream](https://www.youtube.com/watch?v=twM9eExiLhM)
